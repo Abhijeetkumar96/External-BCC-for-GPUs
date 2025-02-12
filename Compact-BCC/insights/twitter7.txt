@@ -1,0 +1,26 @@
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of twitter7 graph, we have identified:
+
+- Articulation Points: 920386.
+- Biconnected Components (BCCs): 1936002.
+
+ in 5.445 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/twitter7.egr started
+Reading ecl file.
+
+      Time taken for the completion of the serial algo is ------ 129298429888 ns => 2 min  9 sec  298 ms  429 us  888 ns
+
+      Time taken for entire program is ------ 2 min  13 sec  130 ms  303 us  210 ns
+
+no of cut vertices - 920386
+
+no of bcc - 1936001
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/twitter7.egr is completed

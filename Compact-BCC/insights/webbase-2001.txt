@@ -1,0 +1,61 @@
+Batch Size: 100000000
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of webbase-2001 graph, we have identified:
+
+- Articulation Points: 7348379.
+- Biconnected Components (BCCs): 30449387.
+
+ in 17.007 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+Batch Size: 200000000
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of webbase-2001 graph, we have identified:
+
+- Articulation Points: 7348379.
+- Biconnected Components (BCCs): 30449387.
+
+ in 13.535 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+Batch Size: 300000000
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of webbase-2001 graph, we have identified:
+
+- Articulation Points: 7348379.
+- Biconnected Components (BCCs): 30449387.
+
+ in 9.771 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+Batch Size: 320000000
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of webbase-2001 graph, we have identified:
+
+- Articulation Points: 7348379.
+- Biconnected Components (BCCs): 30449387.
+
+ in 8.288 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+

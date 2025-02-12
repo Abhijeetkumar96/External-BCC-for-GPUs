@@ -1,0 +1,31 @@
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of GAP-web graph, we have identified:
+
+- Articulation Points: 1283962.
+- Biconnected Components (BCCs): 4085479.
+
+ in 9.108 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+
+=========================================================
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/GAP-web.egr started
+Reading ecl file.
+
+      Time taken for the completion of the serial algo is ------ 58701194090 ns => 0 min  58 sec  701 ms  194 us  90 ns
+
+      Time taken for entire program is ------ 1 min  4 sec  367 ms  746 us  229 ns
+
+no of cut vertices - 1283962
+
+no of bcc - 4085479
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/GAP-web.egr is completed
+
+=========================================================

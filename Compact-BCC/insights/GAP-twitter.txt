@@ -1,0 +1,72 @@
+========================================
+      Graph Analysis Summary
+========================================
+
+After thorough exploration and analysis of GAP-twitter graph, we have identified:
+
+- Articulation Points: 920387.
+- Biconnected Components (BCCs): 21862186.
+
+ in 29.626 sec
+
+Thank you for utilizing our graph analysis tool. We hope it has provided valuable insights into your dataset.
+========================================
+
+=========================================================
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/GAP-twitter.egr started
+Reading ecl file.
+
+      Time taken for the completion of the serial algo is ------ 136182806366 ns => 2 min  16 sec  182 ms  806 us  366 ns
+
+      Time taken for entire program is ------ 2 min  20 sec  96 ms  140 us  421 ns
+
+no of cut vertices - 920387
+
+no of bcc - 21862186
+
+serial bcc for the file /raid/graphwork/datasets/large_graphs/csr_bin/GAP-twitter.egr is completed
+
+=========================================================
+
+_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ Slota's BCC: -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+Starting BCC decomposition...
+filename: /raid/graphwork/datasets/large_graphs/csr_bin/GAP-twitter.egr
+ext: .egr
+Creating graph format
+Inside read_csr.
+n 61578415, m 1222439231
+max degree vert: 0, max degree: 19926185, avg degree 39.703498
+        Done:  3.741854
+Doing BCC-BFS init
+        Done:  0.080575 secs
+Doing BCC-BFS BFS stage
+        Done:  9.722920 secs
+Doing BCC-BFS find articulation point stage
+        Done: 213.621746 secs
+Doing BCC-BFS final BFS stage
+        Done: 1959.903245 secs
+Doing BCC-BFS labeling stage
+        Done:  5.227402
+BCC-BFS Done: 2188556 ms ~ 36 minutes
+
+Starting BCC decomposition...
+filename: /raid/graphwork/datasets/large_graphs/csr_bin/GAP-twitter.egr
+ext: .egr
+Creating graph format
+Inside read_csr.
+n 61578415, m 1222439231
+max degree vert: 0, max degree: 19926185, avg degree 39.703498
+        Done:  3.742111
+Doing BCC-BFS init
+        Done:  0.049821 secs
+Doing BCC-BFS BFS stage
+        Done:  7.884823 secs
+Doing BCC-BFS find articulation point stage
+        Done: 189.585383 secs
+Doing BCC-BFS final BFS stage
+        Done: 1968.267325 secs
+Doing BCC-BFS labeling stage
+        Done:  3.966889
+BCC-BFS Done: 2169754 ms ~ 36 minutes
