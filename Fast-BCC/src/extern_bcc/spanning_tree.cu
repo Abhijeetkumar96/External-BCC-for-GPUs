@@ -42,20 +42,10 @@ inline bool union_async(long idx, int src, int dst, int* temp_label, uint64_t* e
     return false;
 }
 
-// __global__ 
-// void cc_gpu(int numVert, int* d_rep, int* d_componentParent) {
-    
-//     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-//     if(idx < numVert) {
-//         d_rep[idx] = find_compress(idx, d_componentParent);
-//     }
-// }
-
 __global__
-void init_parent_label(int* d_componentParent, int* d_rep, uint64_t* d_parentEdge, int numVert){
+void init_parent_label(int* d_rep, uint64_t* d_parentEdge, int numVert){
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if(idx < numVert){
-        d_componentParent[idx] = idx;
         d_rep[idx]  = idx;
         d_parentEdge[idx] = INT_MAX;
     }
@@ -108,24 +98,18 @@ void union_find_gpu(long total_elt, int* temp_label, uint64_t* edges, uint64_t* 
 
 void run_union_find(
     int numVert, long numEdges, 
-    uint64_t* d_edgelist, uint64_t* d_parentEdge, 
-    int* d_componentParent, int* d_rep) {
+    uint64_t* d_edgelist, uint64_t* d_parentEdge, int* temp_label) {
     
     long grid_size_union = (numEdges + num_threads - 1) / num_threads;
 
     union_find_gpu<<<grid_size_union, num_threads>>>( 
         numEdges, 
-        d_rep, 
+        temp_label, 
         d_edgelist, 
         d_parentEdge 
     );
-
-    // long grid_num = (numVert + num_threads - 1) / num_threads;
-	// cc_gpu<<<grid_num, num_threads>>>(numVert, d_rep, d_componentParent);
-	// CUDA_CHECK(cudaDeviceSynchronize(), "Failed to synchronize cc_gpu");
 }
 
-// void construct_batch_spanning_tree(const uint64_t* h_edgelist, int nodes, long edges) {
 int construct_batch_spanning_tree(GPU_BCG& g_bcg_ds) {
 
     int nodes = g_bcg_ds.numVert;
@@ -134,20 +118,16 @@ int construct_batch_spanning_tree(GPU_BCG& g_bcg_ds) {
 
     std::cout << "Nodes: " << nodes << ", edges: " << edges << " and batchSize: " << batch_size << "\n";
 
-    // The buffer to which we copy
     const uint64_t* h_edgelist  =   g_bcg_ds.h_edgelist;
     uint64_t* d_edgelist        =   g_bcg_ds.d_edgelist;
-    uint64_t* d_parentEdge      =   g_bcg_ds.d_parentEdge;    
+    uint64_t* d_parentEdge      =   g_bcg_ds.d_parentEdge;     // output st edges
     
-    int* d_componentParent      =   g_bcg_ds.d_componentParent;
-    int* d_rep                  =   g_bcg_ds.d_rep;
+    int* d_rep                  =   g_bcg_ds.d_rep; // d_rep is temp_label
 
-    // int num_threads = 1024;
     int num_blocks_vert = (nodes + num_threads - 1) / num_threads;
 
-    init_parent_label<<<num_blocks_vert, num_threads>>>(d_componentParent, d_rep, d_parentEdge, nodes);
+    init_parent_label<<<num_blocks_vert, num_threads>>>(d_rep, d_parentEdge, nodes);
     CUDA_CHECK(cudaDeviceSynchronize(), "Failed to synchronize init kernel");
-    CUDA_CHECK(cudaDeviceSynchronize(), "Failed to synchronize init_ kernel");
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -168,16 +148,12 @@ int construct_batch_spanning_tree(GPU_BCG& g_bcg_ds) {
             cudaMemcpyHostToDevice), 
         "Memcpy error");
 
-        // std::cout << "Batch " << i << ": " << start << " to " << end << std::endl;
-        // std::cout << "Number of elements in batch: " << num_elements_in_batch << std::endl;
-
         // Run the union find algorithm.................................
         run_union_find(
             nodes, 
             num_elements_in_batch, 
             d_edgelist, 
             d_parentEdge, 
-            d_componentParent, 
             d_rep);
     }
 

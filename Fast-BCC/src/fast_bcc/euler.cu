@@ -30,8 +30,6 @@ void create_dup_edges(
         int v = i & 0xFFFFFFFF; // Extract lower 32 bits
         
         int afterRoot = thid > root;
-        // printf("For thid: %d, thid - afterRoot: %d, thid - afterRoot + edge_count: %d\n", thid, thid - afterRoot, thid - afterRoot + edge_count);
-
         d_edges_from[thid - afterRoot + edge_count] = d_edges_to[thid - afterRoot] = v;
         d_edges_to[thid - afterRoot + edge_count] = d_edges_from[thid - afterRoot] = u;
     }
@@ -44,7 +42,7 @@ void update_first_last_nxt(int* d_edges_from, int* d_edges_to, int* d_first, int
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
     if(thid < E) {
         int f = d_edges_from[d_index[thid]];
-        int t = d_edges_to[d_index[thid]];
+        // int t = d_edges_to[d_index[thid]];
 
         if (thid == 0) {
             d_first[f] = d_index[thid];
@@ -56,9 +54,7 @@ void update_first_last_nxt(int* d_edges_from, int* d_edges_to, int* d_first, int
         }
 
         int pf = d_edges_from[d_index[thid - 1]];
-        int pt = d_edges_to[d_index[thid - 1]];
-
-        // printf("For tid: %d, f: %d, t: %d, pf: %d, pt: %d\n", thid, f, t, pf, pt);
+        // int pt = d_edges_to[d_index[thid - 1]];
 
         // calculate the offset array
         if (f != pf) {
@@ -108,7 +104,6 @@ void find_parent(int E, int *rank, int *d_edges_to, int *d_edges_from, int *pare
         int f = d_edges_from[tid];
         int t = d_edges_to[tid];
         int rev_edge = (tid + E / 2) % E;
-        // printf("for tid: %d, f: %d, t: %d, rev_edge: %d\n", tid, f, t, rev_edge);
         if(rank[tid] > rank[rev_edge]) {
             parent[t] = f;
         }
@@ -140,12 +135,6 @@ void compute_level_kernel(
 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-    // if(idx == 0) {
-    //     for(int i = 0; i < E; ++i) {
-    //         printf("devW1Sum: %d\n", devW1Sum[i]);
-    //     }
-    // }
-
     if (idx < E) {
         int loc = E - 1 - devRank[idx];
         // idx is the edge number, so lets retrive the edge first
@@ -176,7 +165,6 @@ void finalise_level_kernel(
 
         // (p(V)，v)
         if(d_parent[v] == u) {
-            //printf("u: %d, v: %d, d_prefix_sum[%d]: %d \n", u, v, idx, d_prefix_sum[idx]);
             d_level[v] = d_prefix_sum[loc];
         }
     }
@@ -185,11 +173,11 @@ void finalise_level_kernel(
 void LexSortIndices(int* d_keys, int* d_values, uint64_t* d_indices_sorted, int num_items) {
 
     uint64_t *d_merged, *d_merged_keys_sorted;
-    cudaMalloc(&d_merged, sizeof(uint64_t) * num_items);
-    cudaMalloc(&d_merged_keys_sorted, sizeof(uint64_t) * num_items);
+    CUCHECK(cudaMalloc(&d_merged, sizeof(uint64_t) * num_items));
+    CUCHECK(cudaMalloc(&d_merged_keys_sorted, sizeof(uint64_t) * num_items));
 
     uint64_t* d_indices;
-    cudaMalloc(&d_indices, sizeof(uint64_t)* num_items);   
+    CUCHECK(cudaMalloc(&d_indices, sizeof(uint64_t)* num_items));   
 
     int blockSize = 1024;
     int numBlocks = (num_items + blockSize - 1) / blockSize; 
@@ -442,11 +430,6 @@ void cuda_euler_tour(
     numBlocks = (E + blockSize - 1) / blockSize;
     find_parent<<<numBlocks, blockSize>>>(E, devRank, d_edges_to, d_edges_from, d_parent);
     CUCHECK(cudaDeviceSynchronize());
-
-    // compute level
-
-    // print_device_edges(d_edges_from, E);
-    // print_device_edges(d_edges_to, E);
 
     compute_level(devRank, d_edges_from, d_edges_to, d_parent, g_bcg_ds.devW1Sum, g_bcg_ds.d_level, N, E);
     

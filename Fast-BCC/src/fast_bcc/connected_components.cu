@@ -169,10 +169,10 @@ void CC(GPU_BCG& g_bcg_ds, const bool lastBatch) {
     int* d_first            = g_bcg_ds.d_first_occ;
     int* d_last             = g_bcg_ds.d_last_occ;
 
-    int* d_low              = g_bcg_ds.d_low;
-    int* d_high             = g_bcg_ds.d_high;
+    int* d_low              = g_bcg_ds.d_first;
+    int* d_high             = g_bcg_ds.d_last;
 
-    int* temp_label         = g_bcg_ds.d_fg;
+    int* temp_label         = g_bcg_ds.devRank;
     int* label              = g_bcg_ds.d_rep;
 
     int* d_counter          = g_bcg_ds.d_counter;

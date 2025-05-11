@@ -230,22 +230,22 @@ void assign_tags(const int root, GPU_BCG& g_bcg_ds, bool isLastBatch) {
     uint64_t* d_edgelist    =   g_bcg_ds.updated_edgelist;
     int* d_parent           =   g_bcg_ds.d_parent;
     
-    int* d_w1               =   g_bcg_ds.d_w1;
-    int* d_w2               =   g_bcg_ds.d_w2;
+    int* d_w1               =   g_bcg_ds.d_edges_to;
+    int* d_w2               =   g_bcg_ds.d_edges_from;
 
     int* d_left             =   g_bcg_ds.d_left;
     int* d_right            =   g_bcg_ds.d_right;
 
-    int* d_a1               =   g_bcg_ds.d_a1;
-    int* d_a2               =   g_bcg_ds.d_a2;
+    int* d_a1               =   g_bcg_ds.d_next;
+    int* d_a2               =   g_bcg_ds.succ;
     
     int* d_na1              =   g_bcg_ds.d_na1;
     int* d_na2              =   g_bcg_ds.d_na2;
     
-    int* d_low              =   g_bcg_ds.d_low;
-    int* d_high             =   g_bcg_ds.d_high;
+    int* d_low              =   g_bcg_ds.d_first;
+    int* d_high             =   g_bcg_ds.d_last;
     
-    int* temp_label         =   g_bcg_ds.d_fg;
+    int* temp_label         =   g_bcg_ds.devRank;
 
     uint64_t* sf_edges      =   g_bcg_ds.d_index; // of size numVert
 

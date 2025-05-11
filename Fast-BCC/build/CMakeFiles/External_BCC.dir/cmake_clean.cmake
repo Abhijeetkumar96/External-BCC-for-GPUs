@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/External_BCC.dir/cmake_device_link.o"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/bcg_memory_utils.cu.o"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/bcg_memory_utils.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/edge_cleanup.cu.o"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/edge_cleanup.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/extern_bcc.cu.o"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/extern_bcc.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/spanning_tree.cu.o"
+  "CMakeFiles/External_BCC.dir/src/extern_bcc/spanning_tree.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/connected_components.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/connected_components.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/euler.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/euler.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/fast_bcc.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/fast_bcc.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/list_ranking.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/list_ranking.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/repair.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/repair.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/spanning_tree.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/spanning_tree.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/sparse_table_max.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/sparse_table_max.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/sparse_table_min.cu.o"
+  "CMakeFiles/External_BCC.dir/src/fast_bcc/sparse_table_min.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/graph/graph.cu.o"
+  "CMakeFiles/External_BCC.dir/src/graph/graph.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/main.cu.o"
+  "CMakeFiles/External_BCC.dir/src/main.cu.o.d"
+  "CMakeFiles/External_BCC.dir/src/utility/cuda_utility.cu.o"
+  "CMakeFiles/External_BCC.dir/src/utility/cuda_utility.cu.o.d"
+  "External_BCC"
+  "External_BCC.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CUDA)
+  include(CMakeFiles/External_BCC.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

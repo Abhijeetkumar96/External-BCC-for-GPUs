@@ -110,7 +110,11 @@ void update_mapping(int* d_mapping, int* bcc_num, int original_num_verts) {
     }
 }
 
-void construct_BCG(GPU_BCG& g_bcg_ds, const size_t BatchSize, const bool isLastBatch) {
+void construct_BCG(
+    GPU_BCG& g_bcg_ds, 
+    const size_t BatchSize, 
+    const bool isLastBatch, 
+    TimerManager& timer_manager) {
 
     int numVert                     =   g_bcg_ds.numVert;
     int original_num_verts          =   g_bcg_ds.orig_numVert;
@@ -151,19 +155,12 @@ void construct_BCG(GPU_BCG& g_bcg_ds, const size_t BatchSize, const bool isLastB
         original_num_verts       // Original number of vertices
     );
     CUDA_CHECK(cudaDeviceSynchronize(), "Failed to synchronize update_mapping");
-    
-    auto end = std::chrono::high_resolution_clock::now();
-    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    
-    // std::cout << "One round of transformation and mapping update takes: " << dur << " ms." << "\n";
 
     #ifdef DEBUG
         std::cout << "Updated Edgelist after transformation: " << "\n";
         print_device_edges(g_bcg_ds.d_edge_buffer, totalSize);
     #endif
 
-    // std::cout << "Update mapping kernel successfully completed." << "\n";
-   start = std::chrono::high_resolution_clock::now();
     // do clean-up, i.e. remove self loops and duplicates.
     remove_self_loops_duplicates(
         g_bcg_ds.d_edge_buffer,       // Input edge-stream 
@@ -179,12 +176,22 @@ void construct_BCG(GPU_BCG& g_bcg_ds, const size_t BatchSize, const bool isLastB
     // Check if at anytime the alloted numEdges is becoming less than the current numEdges
     assert(g_bcg_ds.numEdges <= g_bcg_ds.max_allot); 
 
-    // end = std::chrono::high_resolution_clock::now();
-    // dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    // std::cout << "One round of remove self loops takes: " << dur << " ms." << "\n";
+    auto end = std::chrono::high_resolution_clock::now();
+    auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    
+    // std::cout << "One round of transformation takes: " << dur << " ms." << "\n";
 
-    if(isLastBatch)
+    timer_manager.add_function_time("Transform", dur);
+
+    if(isLastBatch) {
+        start = std::chrono::high_resolution_clock::now();
         repair(g_bcg_ds);
+        end = std::chrono::high_resolution_clock::now();
+        dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+        // std::cout << "\n*********** Repairing took: " << dur << " ms. ***********n\n" << std::endl;
+        timer_manager.add_function_time("Repair", dur);
+    }
 
     // call cuda_bcc
     // std::cout << "Calling cuda_bcc\n";
@@ -194,8 +201,13 @@ void construct_BCG(GPU_BCG& g_bcg_ds, const size_t BatchSize, const bool isLastB
 
     end = std::chrono::high_resolution_clock::now();
     dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    
+    if(!isLastBatch)
+        timer_manager.add_function_time("i-BCC", dur);
+    else
+        timer_manager.add_function_time("Repair", dur);
 
-    // std::cout << "\n*********** One round of BCC takes: " << dur << " ms. ***********n\n" << std::endl;
+    // std::cout << "\n*********** One round of i-BCC takes: " << dur << " ms. ***********n\n" << std::endl;
 }
 
 __global__
@@ -206,13 +218,16 @@ void init_bcc_num(int* parent, int n) {
     }
 }
 
-void extern_bcc(GPU_BCG& g_bcg_ds) {
+int extern_bcc(GPU_BCG& g_bcg_ds) {
     std::cout << "Started Spanning Tree construction." << std::endl;
     Timer myTimer;
     construct_batch_spanning_tree(g_bcg_ds);
 
     auto dur = myTimer.stop();
     std::cout <<"\nSpanning Tree finished in " << dur <<" ms.\n\n" << std::endl;
+
+    TimerManager timer_manager;
+    timer_manager.add_function_time("Spanning Tree", dur);
 
     // -------------------- Assigning to local variables -------------------- //
     const uint64_t* h_edgelist  =   g_bcg_ds.h_edgelist;
@@ -269,30 +284,30 @@ void extern_bcc(GPU_BCG& g_bcg_ds) {
 
         bool isLastBatch = (i == num_batches - 1);
 
-        construct_BCG(g_bcg_ds, num_elements_in_batch, isLastBatch);
+        construct_BCG(g_bcg_ds, num_elements_in_batch, isLastBatch, timer_manager);
     }
 
-    std::cout << "Total Copy Times: " << total << " ms." << "\n" << std::endl;
-
-    // long threadsPerBlock = maxThreadsPerBlock;
-    // int blocks = (original_num_verts + threadsPerBlock - 1) / threadsPerBlock;
-
-    // // Update the actual vertex mapping array for the original graph
-    // update_mapping<<<blocks, threadsPerBlock>>>(
-    //     g_bcg_ds.d_mapping,      // Vertex ID mapping
-    //     g_bcg_ds.d_rep,  // Important BCC numbers
-    //     original_num_verts       // Original number of vertices
-    // );
-    // CUDA_CHECK(cudaDeviceSynchronize(), "Failed to synchronize update_mapping");
+    // std::cout << "Total Copy Times: " << total << " ms." << "\n" << std::endl;
 
     #ifdef DEBUG
         std::cout << "Mapping Array:" << "\n";
         print_device_array(g_bcg_ds.d_mapping, nodes);
     #endif
 
-    // construct_BCG(g_bcg_ds, 0, true);
-
     auto new_dur = myTimer.stop();
-    std::cout <<"computeBCG finished in: " << dur + new_dur <<" ms." << "\n";
+    std::cout <<"computeBCG finished in: " << dur + new_dur - total <<" ms." << "\n";
+
+    timer_manager.print_times();
+
+    std::vector<int> host_rep(g_bcg_ds.numVert);
+    CUDA_CHECK(cudaMemcpy(host_rep.data(), g_bcg_ds.d_rep, g_bcg_ds.numVert * sizeof(int), cudaMemcpyDeviceToHost), "Unable to copy back rep array");
+    std::set<int> num_comp(host_rep.begin(), host_rep.end());
+
+    int root_freq = 0;
+    int root = g_bcg_ds.last_root;
+    size_t final_count = num_comp.size();
+    CUDA_CHECK(cudaMemcpy(&root_freq, g_bcg_ds.d_counter + root, sizeof(int), cudaMemcpyDeviceToHost), "Failed to copy");
+    
+    return (root_freq == 1) ? final_count - 1 : final_count;
 }
 

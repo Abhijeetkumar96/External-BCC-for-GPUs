@@ -74,26 +74,12 @@ int main(int argc, char* argv[]) {
         gpu_bcg.h_edgelist = g.getList();
 
         std::cout << "Starting External BCC:" << std::endl;
-        Timer myTimer;
+        
         // start external_bcc
-        extern_bcc(gpu_bcg);
+        int bcc_count = extern_bcc(gpu_bcg);
 
-        std::vector<int> host_rep(gpu_bcg.numVert);
-        CUDA_CHECK(cudaMemcpy(host_rep.data(), gpu_bcg.d_rep, gpu_bcg.numVert * sizeof(int), cudaMemcpyDeviceToHost), "Unable to copy back rep array");
-        std::set<int> num_comp(host_rep.begin(), host_rep.end());
+        std::cout << "The number of Biconnected Components (BCCs) in " << get_file_extension(filename) << " is: " << bcc_count << "\n";
 
-        int root_freq[1];
-        int root = gpu_bcg.last_root;
-        size_t final_count = num_comp.size();
-        std::cout<<"comp size : "<<final_count<<"\n";
-        CUDA_CHECK(cudaMemcpy(root_freq , gpu_bcg.d_counter + root , sizeof(int) , cudaMemcpyDeviceToHost), "Failed to copy");
-        std::cout<<"root's value : "<<root_freq[0]<<"\n";
-        if(root_freq[0] == 1){
-            std::cout<<"final bcc's count : "<<final_count-1<<"\n";
-        }
-        else{
-            std::cout<<"final bcc's count : "<<final_count<<"\n";
-        }
 
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
