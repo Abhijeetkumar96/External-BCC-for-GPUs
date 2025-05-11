@@ -1,1 +1,0 @@
-/usr/bin/g++ @CMakeFiles/External_BCC.dir/objects1.rsp CMakeFiles/External_BCC.dir/cmake_device_link.o -o External_BCC @CMakeFiles/External_BCC.dir/linkLibs.rsp -L"/usr/local/cuda/targets/x86_64-linux/lib/stubs" -L"/usr/local/cuda/targets/x86_64-linux/lib"
